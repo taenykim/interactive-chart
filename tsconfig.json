@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "amd",
+    "sourceMap": true,
+    "moduleResolution": "Node"
+    // "baseUrl": "./",
+    // "paths": {
+    //   "@src/*": ["src/*"]
+    // }
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/*", "src/types/types.ts"]
+}

@@ -1,0 +1,7 @@
+export const CONTAINER_RATIO = 3 / 4;
+export const MINIMAP_HEIGHT = 80;
+
+export const CHART_RESOLUTION_WIDTH = 1920;
+export const CHART_RESOLUTION_HEIGHT = 1080;
+
+export const MINIMAP_RESOLUTION_WIDTH = 1920;
