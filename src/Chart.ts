@@ -7,25 +7,39 @@ import {
   MINIMAP_HEIGHT,
   MINIMAP_RESOLUTION_WIDTH,
 } from "./constants/index";
+const datas = require("./data/data.json");
 
 // ====================더미데이터
 
-// 제네릭
-const generateData = <T>() => {
-  const obj = <T>{};
-  const values = [300, 600, 900, 1200, 1500, 1800, 2100, 2500];
-  for (let i = 0; i < 40; i++) {
-    obj[i] = values[Math.floor(Math.random() * values.length)];
-  }
-  return obj;
+const makeData = <T>() => {
+  const data = <T>{};
+  datas.forEach((monthItem) => {
+    monthItem.data.forEach((dateItem) => {
+      let amount = 0;
+      dateItem.data.forEach((data) => {
+        amount += data.amount;
+      });
+      data[`${monthItem.month}/${dateItem.date}`] = amount;
+    });
+  });
+  return data;
 };
 
-const data = generateData();
+const data = makeData();
+
+// const data = {
+//   0: -500,
+//   1: 1000,
+//   2: -1500,
+//   3: 2000,
+// };
 
 const dataArr = Object.entries(data);
 const minMax = [Math.min(...Object.values(data)), Math.max(...Object.values(data))];
+const abs = Math.max(...minMax.map((item) => Math.abs(item)));
 const dataPositions = [];
 let dataPositionsFlag = false;
+let minimapPositions = [];
 
 // ============================
 
@@ -38,16 +52,20 @@ export default class Chart {
   moveX: number;
   tempMoveX: number;
 
+  limitRatioX: number;
+  tempLimitRatioX: number;
+
+  chartRatio: number;
+
   constructor(chartProps: ChartProps) {
     this.initProps(chartProps);
     this.initElement();
     this.initStyle();
     this.initChart();
-    this.drawChart(this.moveX);
-    this.addChartEventListener();
+    this.drawChart(this.moveX, this.limitRatioX);
     this.initMinimap();
-    this.drawMinimap();
-    this.addMinimapEventListener();
+    this.drawMinimap(this.moveX);
+    this.addEventListener();
   }
   initProps(chartProps: ChartProps) {
     this.containerName = chartProps.selector;
@@ -97,7 +115,7 @@ export default class Chart {
       flexDirection: "column",
       justifyContent: "space-between",
       height: `${container.clientWidth * CONTAINER_RATIO}px`,
-      backgroundColor: "blue",
+      backgroundColor: "#aaa",
     });
     $style(chartContainer, {
       position: "relative",
@@ -142,10 +160,12 @@ export default class Chart {
     canvas.height = CHART_RESOLUTION_HEIGHT;
     this.moveX = 0;
     this.tempMoveX = 0;
+    this.limitRatioX = 0;
+    this.tempLimitRatioX = 0;
     const { width: trueChartWidth, height: trueChartHeight } = this.elements.chart.getBoundingClientRect();
     this.trueChartScale = { width: trueChartWidth, height: trueChartHeight };
   }
-  drawChart(moveX: number) {
+  drawChart(moveX: number, limitRatioX: number) {
     const canvas = this.elements.chart;
     const ctx = canvas.getContext("2d");
 
@@ -166,7 +186,11 @@ export default class Chart {
     const chartWidth = canvasWidth - leftPadding - rightPadding - valueYWidth;
     const chartHeight = canvasHeight - topPadding - bottomPadding - valueXHeight;
     const limitY = chartHeight / 6;
-    const limitX = chartWidth / 5;
+    const limitX = chartWidth / 10 + limitRatioX;
+
+    const totalChartLength = limitX * (dataArr.length - 1);
+    const chartRatio = chartWidth / totalChartLength;
+    this.chartRatio = chartRatio;
 
     const trueMoveX = (moveX * canvasWidth) / this.trueChartScale.width;
 
@@ -177,7 +201,7 @@ export default class Chart {
     for (const [key, value] of dataArr) {
       ctx.fillStyle = "black";
       ctx.font = "40px arial";
-      ctx.fillText(String(Math.round(Number(key))), x, y);
+      ctx.fillText(key, x, y);
       // this.ctx.moveTo(leftPadding + 200, y - 15);
       // this.ctx.lineTo(canvasWidth + 200, y - 15);
       // this.ctx.lineWidth = 2;
@@ -194,7 +218,7 @@ export default class Chart {
 
     // draw chart
     for (const [key, value] of dataArr) {
-      const dataY = chartHeight * (value / minMax[1]);
+      const dataY = chartHeight / 2 + (chartHeight / 2) * (value / abs);
       // ctx.fillText(
       //   key + "(" + value + ")",
       //   x,
@@ -209,7 +233,7 @@ export default class Chart {
       ctx.beginPath();
 
       ctx.fillStyle = "blue";
-      ctx.arc(x, canvasHeight - bottomPadding - valueXHeight - dataY - 15, 12, 0, Math.PI * 2, true);
+      // ctx.arc(x, canvasHeight - bottomPadding - valueXHeight - dataY - 15, 12, 0, Math.PI * 2, true);
       ctx.fill();
       ctx.beginPath();
       ctx.moveTo(x, canvasHeight - bottomPadding - valueXHeight - dataY - 15);
@@ -228,7 +252,7 @@ export default class Chart {
     ctx.fillRect(leftPadding + valueYWidth + chartWidth, topPadding, chartWidth, chartHeight);
 
     y = canvasHeight - bottomPadding - valueXHeight;
-    let leftValue = 0;
+    let leftValue = -abs;
 
     // draw left padding & y value white
     ctx.fillStyle = "#ffffff";
@@ -239,16 +263,109 @@ export default class Chart {
     for (let i = 0; i < valueYCount; i++) {
       ctx.fillStyle = "black";
       ctx.font = "40px arial";
-      ctx.fillText(String(Math.round(leftValue) + "원"), leftPadding, y);
+      ctx.fillText(String(Math.round(leftValue)), leftPadding, y);
       ctx.moveTo(leftPadding + valueYWidth, y - textSize);
       ctx.lineTo(canvasWidth - rightPadding, y - textSize);
       ctx.lineWidth = 2;
       ctx.stroke();
-      leftValue += minMax[1] / 6;
+      leftValue += abs / 3;
       y -= limitY;
     }
   }
-  addChartEventListener() {
+  initMinimap() {
+    const canvas = this.elements.minimap;
+    canvas.width = MINIMAP_RESOLUTION_WIDTH;
+    const { width: trueMinimapWidth, height: trueMinimapHeight } = this.elements.minimap.getBoundingClientRect();
+    canvas.height = (CHART_RESOLUTION_WIDTH * trueMinimapHeight) / trueMinimapWidth;
+    this.trueMinimapScale = { width: trueMinimapWidth, height: trueMinimapHeight };
+  }
+  drawMinimap(moveX: number) {
+    const canvas = this.elements.minimap;
+    const ctx = canvas.getContext("2d");
+
+    // draw all white
+    ctx.fillStyle = "#eee";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const leftPadding = 30;
+    const rightPadding = 30;
+    const topPadding = 30;
+    const bottomPadding = 60;
+    const textSize = 40;
+    const canvasHeight = canvas.height;
+    const canvasWidth = canvas.width;
+    const minimapWidth = canvasWidth - leftPadding - rightPadding;
+    const minimapHeight = canvasHeight - topPadding - bottomPadding;
+    const limitX = minimapWidth / (dataArr.length - 1);
+
+    // TODO : 실제 이동거리 구하기
+    const trueMoveX =
+      ((moveX * canvasWidth) / this.trueChartScale.width / (canvasWidth - 260)) * (minimapWidth * this.chartRatio);
+
+    // draw true minimap stroke
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(leftPadding, topPadding, minimapWidth, minimapHeight);
+
+    let i = 0;
+    let x = leftPadding;
+
+    // draw visible minimap
+    ctx.fillStyle = "purple";
+    ctx.fillRect(leftPadding + trueMoveX, topPadding, minimapWidth * this.chartRatio, minimapHeight);
+    minimapPositions = [
+      ((leftPadding + trueMoveX) / canvasWidth) * this.trueMinimapScale.width,
+      ((leftPadding + trueMoveX + minimapWidth * this.chartRatio) / canvasWidth) * this.trueMinimapScale.width,
+    ];
+
+    ctx.beginPath();
+    // draw minimap
+    for (const [key, value] of dataArr) {
+      const dataY = minimapHeight / 2 + (minimapHeight / 2) * (value / abs);
+      // ctx.fillText(
+      //   key + "(" + value + ")",
+      //   x,
+      //   i % 2 === 0
+      //     ? canvasHeight - topPadding - dataY - 10
+      //     : canvasHeight - topPadding - dataY - 10 + 30,
+      // );
+      ctx.lineTo(x, canvasHeight - bottomPadding - dataY);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "green";
+      ctx.stroke();
+      ctx.beginPath();
+
+      ctx.fillStyle = "green";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x, canvasHeight - bottomPadding - dataY);
+      !dataPositionsFlag &&
+        dataPositions.push([
+          (x / canvasWidth) * this.trueChartScale.width,
+          ((canvasHeight - bottomPadding - dataY) / canvasHeight) * this.trueChartScale.height,
+        ]);
+      x += limitX;
+      i++;
+    }
+
+    x = leftPadding - textSize / 2;
+    let y = canvasHeight - bottomPadding + textSize;
+
+    // draw x value
+    for (const [key, value] of dataArr) {
+      if (Number(key.split("/")[1]) % 31 === 1) {
+        ctx.fillStyle = "black";
+        ctx.font = "40px arial";
+        ctx.fillText(key, x, y);
+        // this.ctx.moveTo(leftPadding + 200, y - 15);
+        // this.ctx.lineTo(canvasWidth + 200, y - 15);
+        // this.ctx.lineWidth = 2;
+        // this.ctx.stroke();
+      }
+      x += limitX;
+    }
+  }
+  addEventListener() {
     let mousedownFlag: any = false;
 
     const chartContainer = this.elements.chartContainer;
@@ -261,12 +378,14 @@ export default class Chart {
         this.tempMoveX = mousedownFlag - e.clientX;
         const chartTooltip = this.elements.chartTooltip;
         chartTooltip.style.left = `${e.clientX}px`;
-        this.drawChart(this.moveX + this.tempMoveX);
+        this.drawChart(this.moveX + this.tempMoveX, this.limitRatioX);
+        this.drawMinimap(this.moveX + this.tempMoveX);
       } else {
         const chartTooltip = this.elements.chartTooltip;
         chartTooltip.style.display = `block`;
         chartTooltip.style.left = `${e.clientX}px`;
-        this.drawChart(this.moveX);
+        this.drawChart(this.moveX, this.limitRatioX);
+        this.drawMinimap(this.moveX);
 
         dataPositions.forEach((item) => {
           if (e.clientX > item[0] - 6 && e.clientX < item[0] + 6) {
@@ -291,7 +410,9 @@ export default class Chart {
     });
     chartContainer.addEventListener("mouseleave", () => {
       const chartTooltip = this.elements.chartTooltip;
-      this.drawChart(this.moveX);
+      this.drawChart(this.moveX, this.limitRatioX);
+      this.drawMinimap(this.moveX);
+
       chartTooltip.style.display = `none`;
       mousedownFlag = false;
       this.moveX += this.tempMoveX;
@@ -299,100 +420,45 @@ export default class Chart {
         item[0] -= this.tempMoveX;
       });
       this.tempMoveX = 0;
-      this.drawChart(this.moveX);
+      this.drawChart(this.moveX, this.limitRatioX);
+      this.drawMinimap(this.moveX);
     });
-  }
-  initMinimap() {
-    const canvas = this.elements.minimap;
-    canvas.width = MINIMAP_RESOLUTION_WIDTH;
-    const { width: trueMinimapWidth, height: trueMinimapHeight } = this.elements.minimap.getBoundingClientRect();
-    canvas.height = (CHART_RESOLUTION_WIDTH * trueMinimapHeight) / trueMinimapWidth;
-    this.trueMinimapScale = { width: trueMinimapWidth, height: trueMinimapHeight };
-  }
-  drawMinimap() {
-    const canvas = this.elements.minimap;
-    const ctx = canvas.getContext("2d");
-
-    // draw all white
-    ctx.fillStyle = "#eee";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const leftPadding = 30;
-    const rightPadding = 30;
-    const topPadding = 30;
-    const bottomPadding = 60;
-    const textSize = 40;
-    const canvasHeight = canvas.height;
-    const canvasWidth = canvas.width;
-    const minimapWidth = canvasWidth - leftPadding - rightPadding;
-    const minimapHeight = canvasHeight - topPadding - bottomPadding;
-    const limitX = minimapWidth / (dataArr.length - 1);
-
-    // draw true minimap stroke
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(leftPadding, topPadding, minimapWidth, minimapHeight);
-
-    let i = 0;
-    let x = leftPadding;
-
-    // draw minimap
-    for (const [key, value] of dataArr) {
-      const dataY = minimapHeight * (value / minMax[1]);
-      // ctx.fillText(
-      //   key + "(" + value + ")",
-      //   x,
-      //   i % 2 === 0
-      //     ? canvasHeight - topPadding - dataY - 10
-      //     : canvasHeight - topPadding - dataY - 10 + 30,
-      // );
-      ctx.lineTo(x, canvasHeight - bottomPadding - dataY);
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "green";
-      ctx.stroke();
-      ctx.beginPath();
-
-      ctx.fillStyle = "green";
-      ctx.arc(x, canvasHeight - bottomPadding - dataY, 7, 0, Math.PI * 2, true);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(x, canvasHeight - bottomPadding - dataY);
-      !dataPositionsFlag &&
-        dataPositions.push([
-          (x / canvasWidth) * this.trueChartScale.width,
-          ((canvasHeight - bottomPadding - dataY) / canvasHeight) * this.trueChartScale.height,
-        ]);
-      x += limitX;
-      i++;
-    }
-
-    x = leftPadding - textSize / 2;
-    let y = canvasHeight - bottomPadding + textSize;
-
-    // draw x value
-    for (const [key, value] of dataArr) {
-      if (Number(key) % 3 === 0) {
-        ctx.fillStyle = "black";
-        ctx.font = "40px arial";
-        ctx.fillText(String(Math.round(Number(key))), x, y);
-        // this.ctx.moveTo(leftPadding + 200, y - 15);
-        // this.ctx.lineTo(canvasWidth + 200, y - 15);
-        // this.ctx.lineWidth = 2;
-        // this.ctx.stroke();
-      }
-      x += limitX;
-    }
-  }
-  addMinimapEventListener() {
     const minimapContainer = this.elements.minimapContainer;
+    minimapContainer.addEventListener("mousedown", (e) => {
+      mousedownFlag = e.clientX;
+    });
     minimapContainer.addEventListener("mousemove", (e) => {
       const minimapTooltip = this.elements.minimapTooltip;
       minimapTooltip.style.display = `block`;
       minimapTooltip.style.left = `${e.clientX}px`;
+      minimapTooltip.style.width = "1px";
+      minimapTooltip.style.backgroundColor = "#000";
+      minimapTooltip.style.transform = "translate(-50%,0)";
+      if (mousedownFlag) {
+        this.tempLimitRatioX = mousedownFlag - e.clientX;
+        this.drawChart(this.moveX, this.limitRatioX + this.tempLimitRatioX);
+        this.drawMinimap(this.moveX);
+      }
+      if (e.clientX > minimapPositions[0] - 3 && e.clientX < minimapPositions[0] + 3) {
+        minimapTooltip.style.width = "8px";
+        minimapTooltip.style.backgroundColor = "gold";
+      }
+      if (e.clientX > minimapPositions[1] - 3 && e.clientX < minimapPositions[1] + 3) {
+        minimapTooltip.style.width = "8px";
+        minimapTooltip.style.backgroundColor = "gold";
+      }
+    });
+    minimapContainer.addEventListener("mouseup", () => {
+      mousedownFlag = false;
     });
     minimapContainer.addEventListener("mouseleave", () => {
+      mousedownFlag = false;
+      this.limitRatioX += this.tempLimitRatioX;
+      this.drawChart(this.moveX, this.limitRatioX);
+      this.drawMinimap(this.moveX);
       const minimapTooltip = this.elements.minimapTooltip;
       minimapTooltip.style.display = `none`;
+      this.tempLimitRatioX = 0;
     });
   }
 }
