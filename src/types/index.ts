@@ -5,10 +5,15 @@ export interface ChartProps {
 export interface Elements {
   container: HTMLElement;
   chartContainer: HTMLDivElement;
+  chartTitle: HTMLDivElement;
   chart: HTMLCanvasElement;
-  chartTooltip: HTMLDivElement;
+  chartVerticalTooltip: HTMLDivElement;
+  chartHorizontalTooltip: HTMLDivElement;
+  chartHorizontalValue: HTMLDivElement;
+  chartInformation: HTMLDivElement;
   minimapContainer: HTMLDivElement;
   minimap: HTMLCanvasElement;
+  minimapTitle: HTMLDivElement;
   minimapTooltip: HTMLDivElement;
 }
 
