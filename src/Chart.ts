@@ -11,7 +11,12 @@ import {
 } from "./constants/index";
 import { chartMousemoveEvent } from "./events/chartMousemoveEvent";
 import { minimapMousemoveEvent } from "./events/minimapMousemoveEvent";
-import { canvasLengthToTrueLength, chartLengthToMinimapLength, trueLengthToCanvasLength } from "./utils/resize";
+import {
+  canvasLengthToTrueLength,
+  chartLengthToMinimapLength,
+  minimapLengthToChartLength,
+  trueLengthToCanvasLength,
+} from "./utils/resize";
 const datas = require("./data/data.json");
 
 // ====================더미데이터
@@ -71,8 +76,8 @@ export default class Chart {
   moveX: number;
   tempMoveX: number;
 
-  limitRatioX: number;
-  tempLimitRatioX: number;
+  visibleMoveX: number;
+  tempVisibleMoveX: number;
 
   chartRatio: number;
 
@@ -82,9 +87,9 @@ export default class Chart {
     this.initElement();
     this.initStyle();
     this.initChart();
-    this.drawChart(this.moveX, this.limitRatioX);
     this.initMinimap();
-    this.drawMinimap(this.moveX);
+    this.drawChart(this.moveX, this.visibleMoveX);
+    this.drawMinimap(this.moveX, this.visibleMoveX);
     this.addEventListener();
   }
   initProps(chartProps: ChartProps) {
@@ -251,12 +256,12 @@ export default class Chart {
     canvas.height = CHART_RESOLUTION_HEIGHT;
     this.moveX = 0;
     this.tempMoveX = 0;
-    this.limitRatioX = 0;
-    this.tempLimitRatioX = 0;
+    this.visibleMoveX = 0;
+    this.tempVisibleMoveX = 0;
     const { width: trueChartWidth, height: trueChartHeight } = this.elements.chart.getBoundingClientRect();
     this.trueChartCanvasSize = { width: trueChartWidth, height: trueChartHeight };
   }
-  drawChart(moveX: number, limitRatioX: number) {
+  drawChart(moveX: number, visibleMoveX: number) {
     const canvas = this.elements.chart;
     const ctx = canvas.getContext("2d");
 
@@ -269,6 +274,7 @@ export default class Chart {
     /**
      * Chart constants Informations
      */
+
     const LEFT_PADDING = 30;
     const RIGHT_PADDING = 30;
     const TOP_PADDING = 120;
@@ -281,13 +287,21 @@ export default class Chart {
     const TEXT_SIZE = 15;
     const CHART_WIDTH = CANVAS_WIDTH - LEFT_PADDING - RIGHT_PADDING - Y_VALUE_WIDTH;
     const CHART_HEIGHT = CANVAS_HEIGHT - TOP_PADDING - BOTTOM_PADDING - X_VALUE_HEIGHT;
+
     const LIMIT_Y = CHART_HEIGHT / 6;
-    const LIMIT_X = CHART_WIDTH / 10 + limitRatioX;
+    const LIMIT_X = CHART_WIDTH / 10;
     const TOTAL_CHART_WIDTH = LIMIT_X * (Object.keys(data).length - 1);
 
-    this.chartSize = { width: CHART_WIDTH, height: CHART_HEIGHT };
     const chartRatio = CHART_WIDTH / TOTAL_CHART_WIDTH;
     this.chartRatio = chartRatio;
+    this.chartSize = { width: CHART_WIDTH, height: CHART_HEIGHT };
+
+    const trueVisibleMoveX = minimapLengthToChartLength(
+      -trueLengthToCanvasLength(visibleMoveX, CANVAS_WIDTH, this.trueChartCanvasSize.width),
+      this.chartSize.width,
+      1920 - 60,
+      chartRatio,
+    );
 
     const trueMoveX = trueLengthToCanvasLength(moveX, CANVAS_WIDTH, this.trueChartCanvasSize.width);
 
@@ -298,7 +312,7 @@ export default class Chart {
     /**
      * Draw X Axis
      */
-    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX;
+    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX - trueVisibleMoveX;
     y = CANVAS_HEIGHT - BOTTOM_PADDING;
     for (const key in data) {
       ctx.fillStyle = "#333";
@@ -311,7 +325,7 @@ export default class Chart {
     /**
      * Draw Line Chart
      */
-    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX;
+    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX - trueVisibleMoveX;
     for (const key in data) {
       const valueInChart = CHART_HEIGHT / 2 + (CHART_HEIGHT / 2) * (data[key] / abs);
       const chartDataY = CANVAS_HEIGHT - BOTTOM_PADDING - X_VALUE_HEIGHT - valueInChart - 15;
@@ -334,7 +348,7 @@ export default class Chart {
     /**
      * Draw Arc Point
      */
-    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX;
+    x = LEFT_PADDING + Y_VALUE_WIDTH - trueMoveX - trueVisibleMoveX;
     for (const key in data) {
       const valueInChart = CHART_HEIGHT / 2 + (CHART_HEIGHT / 2) * (data[key] / abs);
       const chartDataY = CANVAS_HEIGHT - BOTTOM_PADDING - X_VALUE_HEIGHT - valueInChart - 15;
@@ -387,11 +401,11 @@ export default class Chart {
   initMinimap() {
     const canvas = this.elements.minimap;
     canvas.width = MINIMAP_RESOLUTION_WIDTH;
-    const { width: trueMINIMAP_WIDTH, height: trueMINIMAP_HEIGHT } = this.elements.minimap.getBoundingClientRect();
-    canvas.height = (CHART_RESOLUTION_WIDTH * trueMINIMAP_HEIGHT) / trueMINIMAP_WIDTH;
-    this.trueMinimapCanvasSize = { width: trueMINIMAP_WIDTH, height: trueMINIMAP_HEIGHT };
+    const { width: trueMinimapWidth, height: trueMinimapHeight } = this.elements.minimap.getBoundingClientRect();
+    canvas.height = (CHART_RESOLUTION_WIDTH * trueMinimapHeight) / trueMinimapWidth;
+    this.trueMinimapCanvasSize = { width: trueMinimapWidth, height: trueMinimapHeight };
   }
-  drawMinimap(moveX: number) {
+  drawMinimap(moveX: number, visibleMoveX) {
     const canvas = this.elements.minimap;
     const ctx = canvas.getContext("2d");
 
@@ -416,6 +430,8 @@ export default class Chart {
     const LIMIT_X = MINIMAP_WIDTH / (Object.keys(data).length - 1);
 
     this.minimapSize = { width: MINIMAP_WIDTH, height: MINIMAP_HEIGHT };
+
+    const trueVisibleMoveX = -trueLengthToCanvasLength(visibleMoveX, CANVAS_WIDTH, this.trueChartCanvasSize.width);
 
     const trueMoveXInChart = trueLengthToCanvasLength(moveX, CANVAS_WIDTH, this.trueChartCanvasSize.width);
     const trueMoveX = chartLengthToMinimapLength(
@@ -442,11 +458,28 @@ export default class Chart {
      * Draw Visible Minimap Box
      */
     ctx.fillStyle = "#fff";
-    ctx.fillRect(LEFT_PADDING + trueMoveX, TOP_PADDING, MINIMAP_WIDTH * this.chartRatio, MINIMAP_HEIGHT);
+    ctx.fillRect(
+      LEFT_PADDING + trueMoveX + trueVisibleMoveX,
+      TOP_PADDING,
+      MINIMAP_WIDTH * this.chartRatio,
+      MINIMAP_HEIGHT,
+    );
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(
+      LEFT_PADDING + trueMoveX + trueVisibleMoveX,
+      TOP_PADDING,
+      MINIMAP_WIDTH * this.chartRatio,
+      MINIMAP_HEIGHT,
+    );
     minimapPositions = [
-      canvasLengthToTrueLength(LEFT_PADDING + trueMoveX, CANVAS_WIDTH, this.trueMinimapCanvasSize.width),
       canvasLengthToTrueLength(
-        LEFT_PADDING + trueMoveX + MINIMAP_WIDTH * this.chartRatio,
+        LEFT_PADDING + trueMoveX + trueVisibleMoveX,
+        CANVAS_WIDTH,
+        this.trueMinimapCanvasSize.width,
+      ),
+      canvasLengthToTrueLength(
+        LEFT_PADDING + trueMoveX + trueVisibleMoveX + MINIMAP_WIDTH * this.chartRatio,
         CANVAS_WIDTH,
         this.trueMinimapCanvasSize.width,
       ),
@@ -521,8 +554,8 @@ export default class Chart {
         chartHorizontalValue.style.display = `none`;
 
         this.moveX += this.tempMoveX;
-        this.drawChart(this.moveX, this.limitRatioX);
-        this.drawMinimap(this.moveX);
+        this.drawChart(this.moveX, this.visibleMoveX);
+        this.drawMinimap(this.moveX, this.visibleMoveX);
 
         mousedownFlag = null;
         this.tempMoveX = 0;
@@ -537,15 +570,41 @@ export default class Chart {
         mousedownFlag = e.offsetX;
       });
       minimapContainer.addEventListener("mouseup", () => {
+        dataPositions.forEach((item) => {
+          item[0] += canvasLengthToTrueLength(
+            minimapLengthToChartLength(
+              trueLengthToCanvasLength(this.tempVisibleMoveX, this.chartSize.width, this.trueChartCanvasSize.width),
+              this.chartSize.width,
+              this.minimapSize.width,
+              this.chartRatio,
+            ),
+            this.chartSize.width,
+            this.trueChartCanvasSize.width,
+          );
+        });
         mousedownFlag = null;
+        this.visibleMoveX += this.tempVisibleMoveX;
+        this.tempVisibleMoveX = 0;
       });
       minimapContainer.addEventListener("mouseleave", () => {
-        this.limitRatioX += this.tempLimitRatioX;
-        this.drawChart(this.moveX, this.limitRatioX);
-        this.drawMinimap(this.moveX);
+        dataPositions.forEach((item) => {
+          item[0] += canvasLengthToTrueLength(
+            minimapLengthToChartLength(
+              trueLengthToCanvasLength(this.tempVisibleMoveX, this.chartSize.width, this.trueChartCanvasSize.width),
+              this.chartSize.width,
+              this.minimapSize.width,
+              this.chartRatio,
+            ),
+            this.chartSize.width,
+            this.trueChartCanvasSize.width,
+          );
+        });
+        this.visibleMoveX += this.tempVisibleMoveX;
+        this.drawChart(this.moveX, this.visibleMoveX);
+        this.drawMinimap(this.moveX, this.visibleMoveX);
 
         mousedownFlag = null;
-        this.tempLimitRatioX = 0;
+        this.tempVisibleMoveX = 0;
       });
     };
 

@@ -1,35 +1,40 @@
-export const chartMousemoveEvent = (e, _this, mousedownFlag, dataPositions, dataContents) => {
+import Chart from "../Chart";
+
+export const chartMousemoveEvent = (
+  e: MouseEvent,
+  _this: Chart,
+  mousedownFlag: null | number,
+  dataPositions: any,
+  dataContents: any,
+) => {
   if (e.target !== _this.elements.chart) return;
-  const trueCHART_WIDTH = _this.elements.chart.getBoundingClientRect().width;
-  const trueCHART_HEIGHT = _this.elements.chart.getBoundingClientRect().height;
-  const CANVAS_WIDTH = _this.elements.chart.width;
-  const CANVAS_HEIGHT = _this.elements.chart.height;
   if (mousedownFlag) {
     _this.tempMoveX = mousedownFlag - e.offsetX;
     const chartVerticalTooltip = _this.elements.chartVerticalTooltip;
-    chartVerticalTooltip.style.left = `${e.offsetX}px`;
     const chartHorizontalTooltip = _this.elements.chartHorizontalTooltip;
+    chartVerticalTooltip.style.left = `${e.offsetX}px`;
     chartHorizontalTooltip.style.top = `${e.offsetY}px`;
-    _this.drawChart(_this.moveX + _this.tempMoveX, _this.limitRatioX);
-    _this.drawMinimap(_this.moveX + _this.tempMoveX);
+    _this.drawChart(_this.moveX + _this.tempMoveX, _this.visibleMoveX);
+    _this.drawMinimap(_this.moveX + _this.tempMoveX, _this.visibleMoveX);
   } else {
     const chartVerticalTooltip = _this.elements.chartVerticalTooltip;
-    chartVerticalTooltip.style.display = `block`;
     const chartHorizontalTooltip = _this.elements.chartHorizontalTooltip;
+    chartVerticalTooltip.style.display = `block`;
     chartHorizontalTooltip.style.display = `block`;
     chartHorizontalTooltip.style.top = `${e.offsetY}px`;
-    _this.drawChart(_this.moveX, _this.limitRatioX);
-    _this.drawMinimap(_this.moveX);
+    _this.drawChart(_this.moveX, _this.visibleMoveX);
+    _this.drawMinimap(_this.moveX, _this.visibleMoveX);
   }
 
   const chartInformation = _this.elements.chartInformation;
   const chartHorizontalValue = _this.elements.chartHorizontalValue;
+  chartInformation.style.left = `${e.offsetX + 20}px`;
+  chartInformation.style.top = `${e.offsetY + 20}px`;
   chartHorizontalValue.style.display = "block";
   chartHorizontalValue.style.left = `0px`;
   chartHorizontalValue.style.top = `${e.offsetY}px`;
   chartHorizontalValue.innerHTML = `${e.offsetY}`;
-  chartInformation.style.left = `${e.offsetX + 20}px`;
-  chartInformation.style.top = `${e.offsetY + 20}px`;
+
   const chartVerticalTooltip = _this.elements.chartVerticalTooltip;
   dataPositions.forEach((item, i) => {
     if (e.offsetX > item[0] - 6 && e.offsetX < item[0] + 6) {

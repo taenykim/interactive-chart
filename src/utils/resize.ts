@@ -9,3 +9,7 @@ export const canvasLengthToTrueLength = (canvasLength, canvasSize, trueSize) => 
 export const chartLengthToMinimapLength = (chartLength, chartSize, minimapSize, visibleRatio) => {
   return chartLength * (minimapSize / chartSize) * visibleRatio;
 };
+
+export const minimapLengthToChartLength = (minimapLength, chartSize, minimapSize, visibleRatio) => {
+  return ((minimapLength / minimapSize) * chartSize) / visibleRatio;
+};
