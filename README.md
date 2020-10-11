@@ -8,6 +8,10 @@
 
 ![](./images/screenshot.png)
 
+### Demo
+
+https://interactive-chart.vercel.app/
+
 ## How to use
 
 ...
