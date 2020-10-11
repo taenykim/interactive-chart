@@ -3,11 +3,9 @@
     "target": "es5",
     "module": "amd",
     "sourceMap": true,
-    "moduleResolution": "Node"
-    // "baseUrl": "./",
-    // "paths": {
-    //   "@src/*": ["src/*"]
-    // }
+    "moduleResolution": "Node",
+    "declaration": true,
+    "declarationDir": "./dist/types"
   },
   "exclude": ["node_modules"],
   "include": ["./src/*", "src/types/types.ts"]

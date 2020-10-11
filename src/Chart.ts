@@ -14,6 +14,7 @@ import {
 } from "./utils/resize";
 
 export default class Chart {
+  chartTitle: string;
   containerName: string;
   elements: Elements;
   trueChartCanvasSize: ElementScale;
@@ -65,6 +66,7 @@ export default class Chart {
       minimapTitle: undefined,
       minimapTooltip: undefined,
     };
+    this.chartTitle = chartProps.chartTitle;
 
     const makeData = <T>(datas) => {
       const data = <T>{};
@@ -99,7 +101,7 @@ export default class Chart {
   insertHTML() {
     this.elements.container = document.getElementById(this.containerName);
     this.elements.container.innerHTML = `
-    <div id='${this.containerName}-chart-title'>Accountbook Line Chart</div>
+    <div id='${this.containerName}-chart-title'>${this.chartTitle}</div>
     <div style="width:inherit; height:inherit; padding:6px 0px 6px 0px">
       <div id='${this.containerName}-chart-container'>
         <div id='${this.containerName}-chart-vertical-tooltip'></div>

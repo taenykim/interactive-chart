@@ -4,7 +4,8 @@ const dummy = require("./data/data.json");
 
 const chartProps: ChartProps = {
   selector: "root",
+  chartTitle: "Accountbook line Chart",
   data: dummy,
 };
 
-new Chart(chartProps);
+export { Chart };

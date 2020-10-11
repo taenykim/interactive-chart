@@ -1,0 +1,32 @@
+import { ChartProps, Elements, ElementScale } from "./types/index";
+export default class Chart {
+    chartTitle: string;
+    containerName: string;
+    elements: Elements;
+    trueChartCanvasSize: ElementScale;
+    trueMinimapCanvasSize: ElementScale;
+    chartSize: ElementScale;
+    minimapSize: ElementScale;
+    dataContents: any[];
+    data: any[];
+    minMax: any;
+    abs: any;
+    moveX: number;
+    tempMoveX: number;
+    visibleMoveX: number;
+    tempVisibleMoveX: number;
+    chartRatio: number;
+    tempChartRatio: number;
+    dataPositions: any[];
+    minimapPositions: any[];
+    constructor(chartProps: ChartProps);
+    initProps(chartProps: ChartProps): void;
+    insertHTML(): void;
+    initElement(): void;
+    initStyle(): void;
+    initChart(): void;
+    drawChart(moveX: number, visibleMoveX: number): void;
+    initMinimap(): void;
+    drawMinimap(moveX: number, visibleMoveX: any): void;
+    addEventListener(): void;
+}
