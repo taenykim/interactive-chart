@@ -1,5 +1,3 @@
-// 미니맵과 차트 좌표 변환 함수 만들기
-
 import { ChartProps, Elements, ElementScale } from "./types/index";
 import { $style } from "./utils/domAPI";
 import {
@@ -14,10 +12,6 @@ import {
   minimapLengthToChartLength,
   trueLengthToCanvasLength,
 } from "./utils/resize";
-
-// ====================더미데이터
-
-// ============================
 
 export default class Chart {
   containerName: string;
@@ -149,7 +143,6 @@ export default class Chart {
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
-      // height: `${container.clientWidth * CONTAINER_RATIO}px`,
     });
     $style(chartContainer, {
       position: "relative",
@@ -235,13 +228,10 @@ export default class Chart {
     });
     $style(minimapTooltip, {
       display: "none",
-      // width: "1px",
-      // height: "inherit",
       fontSize: "30px",
       position: "absolute",
       top: "0",
       left: "0",
-      // backgroundColor: "#333",
       pointerEvents: "none",
     });
   }
@@ -487,21 +477,9 @@ export default class Chart {
     ctx.strokeStyle = "#000";
     ctx.strokeRect(LEFT_PADDING, TOP_PADDING, MINIMAP_WIDTH, MINIMAP_HEIGHT);
 
-    // /**
-    //  * Draw center Line
-    //  */
-    // ctx.beginPath();
-    // ctx.moveTo(LEFT_PADDING, TOP_PADDING + this.minimapSize.height / 2);
-    // ctx.lineTo(LEFT_PADDING + this.minimapSize.width, TOP_PADDING + this.minimapSize.height / 2);
-    // ctx.strokeStyle = "#000";
-    // ctx.lineWidth = 1;
-    // ctx.stroke();
-
     /**
      * Draw Visible Minimap Box
      */
-    console.log(LEFT_PADDING + trueMoveX + trueVisibleMoveX);
-
     ctx.fillStyle = "#fff";
     ctx.fillRect(
       LEFT_PADDING + trueMoveX + trueVisibleMoveX,
@@ -555,7 +533,6 @@ export default class Chart {
     x = LEFT_PADDING - TEXT_SIZE / 2;
     y = CANVAS_HEIGHT - BOTTOM_PADDING + TEXT_SIZE;
     for (const key in this.data) {
-      // 1일만 기록
       if (Number(key.split("/")[1]) % 31 === 1) {
         ctx.fillStyle = "black";
         ctx.font = "40px arial";
@@ -683,8 +660,8 @@ export default class Chart {
             -(mousedownFlag - e.offsetX) /
             canvasLengthToTrueLength(this.minimapSize.width, 1920, this.trueMinimapCanvasSize.width);
           this.chartRatio = this.tempChartRatio + moveRatio;
-          this.drawChart(this.moveX, this.visibleMoveX);
-          this.drawMinimap(this.moveX, this.visibleMoveX);
+          this.drawChart(this.moveX, this.visibleMoveX + this.tempVisibleMoveX);
+          this.drawMinimap(this.moveX, this.visibleMoveX + this.tempVisibleMoveX);
         }
         if (leftResizeFlag) {
           const moveRatio =
@@ -692,8 +669,8 @@ export default class Chart {
             canvasLengthToTrueLength(this.minimapSize.width, 1920, this.trueMinimapCanvasSize.width);
           this.chartRatio = this.tempChartRatio + moveRatio;
           this.tempVisibleMoveX = mousedownFlag - e.offsetX;
-          this.drawChart(0, this.visibleMoveX + this.tempVisibleMoveX);
-          this.drawMinimap(0, this.visibleMoveX + this.tempVisibleMoveX);
+          this.drawChart(this.moveX, this.visibleMoveX + this.tempVisibleMoveX);
+          this.drawMinimap(this.moveX, this.visibleMoveX + this.tempVisibleMoveX);
         }
         if (moveFlag) {
           this.tempVisibleMoveX = mousedownFlag - e.offsetX;
