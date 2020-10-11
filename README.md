@@ -6,6 +6,8 @@
 
 📈 📉 push datas and make interactive chart 📊
 
+![](./images/screenshot.png)
+
 ## How to use
 
 ...
