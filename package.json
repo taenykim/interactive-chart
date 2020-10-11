@@ -1,7 +1,7 @@
 {
-  "name": "chart",
-  "version": "1.0.0",
-  "description": "",
+  "name": "interactive-chart",
+  "version": "0.0.1",
+  "description": "push data and make interactive chart",
   "main": "dist/index.min.js",
   "module": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
@@ -10,8 +10,22 @@
     "build": "webpack",
     "dev": "webpack-dev-server"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "taenykim",
+  "license": "MIT",
+  "keywords": [
+    "interactive",
+    "chart",
+    "line-chart",
+    "canvas"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taenykim/interactive-chart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/taenykim/interactive-chart/issues"
+  },
+  "homepage": "https://github.com/taenykim/interactive-chart#readme",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
