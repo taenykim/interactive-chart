@@ -1,5 +1,6 @@
 export interface ChartProps {
   selector: string;
+  data: any[];
 }
 
 export interface Elements {

@@ -1,14 +1,14 @@
-const incomeAmounts = [5000, 10000, 15000, 30000, 50000];
+const incomeAmounts = [3000, 5000, 10000, 15000, 20000, 50000];
 const incomeTypes = ["월급", "용돈", "기타수입"];
 
-const outlayAmounts = [-1000, -3000, -5000, -10000, -50000, -100000];
+const outlayAmounts = [-1000, -3000, -5000, -10000, -30000, -50000];
 const outlayTypes = ["식비", "생활", "쇼핑/뷰티", "교통", "의료/건강", "문화/여가", "미분류"];
 
 const fs = require("fs");
 
 const generateData = () => {
   const obj = [];
-  for (let month = 10; month <= 12; month++) {
+  for (let month = 11; month <= 12; month++) {
     const monthObj = {
       month,
       data: [],
