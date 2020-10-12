@@ -13,8 +13,6 @@ export default class Chart {
     abs: any;
     moveX: number;
     tempMoveX: number;
-    visibleMoveX: number;
-    tempVisibleMoveX: number;
     chartRatio: number;
     tempChartRatio: number;
     dataPositions: any[];
@@ -25,8 +23,8 @@ export default class Chart {
     initElement(): void;
     initStyle(): void;
     initChart(): void;
-    drawChart(moveX: number, visibleMoveX: number): void;
+    drawChart(moveX: number): void;
     initMinimap(): void;
-    drawMinimap(moveX: number, visibleMoveX: any): void;
+    drawMinimap(moveX: number): void;
     addEventListener(): void;
 }

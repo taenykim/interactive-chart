@@ -8,4 +8,6 @@ const chartProps: ChartProps = {
   data: dummy,
 };
 
+// new Chart({ selector: "root", chartTitle: "d", data: dummy });
+
 export { Chart };
