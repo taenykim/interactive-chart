@@ -8,7 +8,7 @@ const fs = require("fs");
 
 const generateData = () => {
   const obj = [];
-  for (let month = 11; month <= 12; month++) {
+  for (let month = 1; month <= 12; month++) {
     const monthObj = {
       month,
       data: [],
