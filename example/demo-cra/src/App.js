@@ -4,7 +4,7 @@ import data from "./data.json";
 import styled from "styled-components";
 
 const ChartComp = styled.div`
-  width: 700px;
+  width: 900px;
   border: 2px solid black;
   background-color: #fff;
   padding: 12px;
