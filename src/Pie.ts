@@ -39,7 +39,6 @@ export default class Pie {
     this.containerName = chartProps.selector;
     this.chartTitle = chartProps.chartTitle;
     this.offsetMonth = chartProps.offsetMonth;
-    console.log(this.offsetMonth);
 
     incomeData = {};
     outlayData = {};
@@ -276,13 +275,12 @@ export default class Pie {
     const incomeDatas: number[] = Object.values(incomeData);
     const incomeSum: number = incomeDatas.reduce((acc: number, cur: number) => acc + cur, 0);
     i = 90;
-    [].slice.call(incomes).forEach((item: HTMLElement, index) => {
+    [].slice.call(incomes).forEach((item: HTMLElement) => {
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      const value = incomeData[category] ? incomeData[category] : 0;
       let itemI = i;
-      let myIndex = itemI + 180 * (incomeDatas[index] / incomeSum) - 0.5;
-      item.setAttribute(
-        "d",
-        toPieChartItemPath(250, 250, 172, 202, i, i + 180 * (incomeDatas[index] / incomeSum) - 0.5),
-      );
+      let myIndex = incomeData[category] ? itemI + 180 * (incomeData[category] / incomeSum) - 0.5 : i;
+      item.setAttribute("d", toPieChartItemPath(250, 250, 172, 202, i, myIndex));
       item.addEventListener("mouseenter", (e) => {
         item.setAttribute("d", toPieChartItemPath(250, 250, 172, 232, itemI, myIndex));
         [].slice.call(incomes).forEach((item: HTMLElement) => {
@@ -304,7 +302,7 @@ export default class Pie {
       item.addEventListener("mouseleave", () => {
         item.setAttribute("d", toPieChartItemPath(250, 250, 172, 202, itemI, myIndex));
       });
-      i += 180 * (incomeDatas[index] / incomeSum);
+      i += 180 * (value / incomeSum);
     });
 
     /**
@@ -312,29 +310,37 @@ export default class Pie {
      */
     const IncomeTexts = svg.querySelectorAll(`.${this.containerName}-income-text`);
     i = 180;
-    [].slice.call(IncomeTexts).forEach((item: HTMLElement, index) => {
-      item.style.cssText = `font-size:12px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
-        i + (180 * (incomeDatas[index] / incomeSum)) / 2
-      }deg); user-select:none; pointer-events:none;`;
-      i += 180 * (incomeDatas[index] / incomeSum);
+    [].slice.call(IncomeTexts).forEach((item: HTMLElement) => {
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      let myIndex = incomeData[category] ? 180 * (incomeData[category] / incomeSum) : 0;
+      if (myIndex) {
+        item.style.cssText = `font-size:12px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
+          i + myIndex / 2
+        }deg); user-select:none; pointer-events:none;`;
+        i += myIndex;
+      } else {
+        item.style.cssText = `font-size:0px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
+          i + myIndex / 2
+        }deg); user-select:none; pointer-events:none;`;
+        i += myIndex;
+      }
     });
 
     /**
      * Draw Outlay Data [교통, 쇼핑/뷰티 ...]
      */
-    i = 270;
     const outlays = svg.querySelectorAll(`.${this.containerName}-outlay`);
     const outlayDatas: number[] = Object.values(outlayData);
     const outlaySum: number = outlayDatas.reduce((acc: number, cur: number) => acc + cur, 0);
-    [].slice.call(outlays).forEach((item: HTMLElement, index) => {
+    i = 270;
+    [].slice.call(outlays).forEach((item: HTMLElement) => {
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      const value = outlayData[category] ? outlayData[category] : 0;
       let itemI = i;
-      let myIndex = itemI + 180 * (outlayDatas[index] / outlaySum) - 0.5;
-      item.setAttribute(
-        "d",
-        toPieChartItemPath(250, 250, 172, 202, i, i + 180 * (outlayDatas[index] / outlaySum) - 0.5),
-      );
+      let myIndex = outlayData[category] ? itemI + 180 * (outlayData[category] / outlaySum) - 0.5 : i;
+      item.setAttribute("d", toPieChartItemPath(250, 250, 172, 202, i, myIndex));
       item.addEventListener("mouseenter", (e) => {
-        item.setAttribute("d", toPieChartItemPath(250, 250, 172, 222, itemI, myIndex));
+        item.setAttribute("d", toPieChartItemPath(250, 250, 172, 232, itemI, myIndex));
         [].slice.call(outlays).forEach((item: HTMLElement) => {
           item.style.opacity = "0.3";
         });
@@ -342,8 +348,9 @@ export default class Pie {
           item.style.opacity = "0.3";
         });
         (<HTMLElement>e.currentTarget).style.opacity = "1";
-        (<HTMLElement>types[0]).style.opacity = "0.3";
         (<HTMLElement>types[1]).style.opacity = "1";
+        (<HTMLElement>types[0]).style.opacity = "0.3";
+
         selectedData[`dataType`] = (<HTMLElement>e.currentTarget).id.split(`-`)[
           (<HTMLElement>e.currentTarget).id.split(`-`).length - 1
         ];
@@ -353,7 +360,7 @@ export default class Pie {
       item.addEventListener("mouseleave", () => {
         item.setAttribute("d", toPieChartItemPath(250, 250, 172, 202, itemI, myIndex));
       });
-      i += 180 * (outlayDatas[index] / outlaySum);
+      i += 180 * (value / outlaySum);
     });
 
     /**
@@ -362,10 +369,19 @@ export default class Pie {
     const outlayTexts = svg.querySelectorAll(`.${this.containerName}-outlay-text`);
     i = 0;
     [].slice.call(outlayTexts).forEach((item: HTMLElement, index) => {
-      item.style.cssText = `font-size:12px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
-        i + (180 * (outlayDatas[index] / outlaySum)) / 2
-      }deg); user-select:none; pointer-events:none;`;
-      i += 180 * (outlayDatas[index] / outlaySum);
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      let myIndex = outlayData[category] ? 180 * (outlayData[category] / outlaySum) : 0;
+      if (myIndex) {
+        item.style.cssText = `font-size:12px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
+          i + myIndex / 2
+        }deg); user-select:none; pointer-events:none;`;
+        i += myIndex;
+      } else {
+        item.style.cssText = `font-size:0px; transform-origin:250px 430px; transform:translate(0px,-180px) rotate(${
+          i + myIndex / 2
+        }deg); user-select:none; pointer-events:none;`;
+        i += myIndex;
+      }
     });
   }
 
@@ -394,15 +410,19 @@ export default class Pie {
     const outlayDatas: number[] = Object.values(outlayData);
     const outlaySum: number = outlayDatas.reduce((acc: number, cur: number) => acc + cur, 0);
 
-    [].slice.call(incomes).forEach((item: HTMLElement, index) => {
+    [].slice.call(incomes).forEach((item: HTMLElement) => {
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      const value = incomeData[category] ? incomeData[category] : 0;
       if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
-        ratio = incomeDatas[index] / incomeSum;
+        ratio = value / incomeSum;
       }
     });
 
-    [].slice.call(outlays).forEach((item: HTMLElement, index) => {
+    [].slice.call(outlays).forEach((item: HTMLElement) => {
+      const category = item.id.split("-")[item.id.split("-").length - 1];
+      const value = incomeData[category] ? incomeData[category] : 0;
       if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
-        ratio = outlayDatas[index] / outlaySum;
+        ratio = value / outlaySum;
       }
     });
 
@@ -474,6 +494,7 @@ export default class Pie {
         const month = Number(
           (<HTMLElement>e.currentTarget).id.split("-")[(<HTMLElement>e.currentTarget).id.split("-").length - 1],
         );
+        this.initProps(this.chartProps);
         this.changeData(month);
         this.drawChart();
 
