@@ -8,5 +8,5 @@
     "declarationDir": "./dist/types"
   },
   "exclude": ["node_modules"],
-  "include": ["./src/*", "src/types/types.ts"]
+  "include": ["./src/*"]
 }

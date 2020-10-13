@@ -2,7 +2,7 @@ export interface ChartProps {
   selector: string;
   chartTitle: string;
   data: any[];
-  offsetMonth:number;
+  offsetMonth: number;
 }
 
 export interface Elements {
@@ -24,3 +24,8 @@ export interface ElementScale {
   width: number;
   height: number;
 }
+
+/**
+ * If this function is removed, interface is not compiled
+ */
+export const tempFunction = (name) => 23;

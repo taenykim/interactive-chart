@@ -1,4 +1,4 @@
-import { ChartProps, Elements, ElementScale } from "./types/index";
+import { ChartProps, Elements, ElementScale } from "./types";
 export default class Line {
     chartTitle: string;
     containerName: string;

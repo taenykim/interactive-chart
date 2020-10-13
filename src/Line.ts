@@ -1,4 +1,4 @@
-import { ChartProps, Elements, ElementScale } from "./types/index";
+import { ChartProps, Elements, ElementScale, tempFunction } from "./types";
 import { $style } from "./utils/domAPI";
 import {
   CHART_RESOLUTION_HEIGHT,
@@ -14,6 +14,7 @@ import {
 } from "./utils/resize";
 
 let del = 0;
+tempFunction("bug");
 
 export default class Line {
   chartTitle: string;
