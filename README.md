@@ -5,9 +5,19 @@
 
 📈 📉 push datas and make interactive chart 📊
 
+## Line Chart
+
+> make chart with Canvas
+
 ![](./images/screenshot.png)
 
-### Demo
+## Pie Chart
+
+> make chart with SVG
+
+![](./images/screenshot2.png)
+
+## Demo
 
 https://interactive-chart.vercel.app/
 
@@ -18,7 +28,15 @@ npm i interactive-chart
 ```
 
 ```js
-new Chart({
+// Line Chart
+new Line({
+  selector: "root", // DOM element id,
+  chartTitle: "Accountbook Line Chart", // chart title
+  data, // chart data
+});
+
+// Pie Chart
+new Pie({
   selector: "root", // DOM element id,
   chartTitle: "Accountbook Line Chart", // chart title
   data, // chart data

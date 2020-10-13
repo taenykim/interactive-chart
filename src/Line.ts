@@ -15,7 +15,7 @@ import {
 
 let del = 0;
 
-export default class Chart {
+export default class Line {
   chartTitle: string;
   containerName: string;
   elements: Elements;
