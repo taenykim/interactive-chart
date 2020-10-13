@@ -19,6 +19,7 @@ export default class Pie {
 
   chartTitle: string;
   containerName: string;
+  offsetMonth :number;
 
   originalData: any[];
   dataContents: any[];
@@ -29,12 +30,17 @@ export default class Pie {
     this.initProps(this.chartProps);
     this.insertHTML();
     this.initStyle();
+    this.offsetMonth &&this.changeData(this.offsetMonth)
+    this.offsetMonth && this.initStyleOffsetMonth()
     this.drawChart();
     this.addEventListener();
   }
   initProps(chartProps: ChartProps) {
     this.containerName = chartProps.selector;
     this.chartTitle = chartProps.chartTitle
+    this.offsetMonth = chartProps.offsetMonth
+    console.log(this.offsetMonth);
+    
     incomeData = {};
     outlayData = {};
 
@@ -514,6 +520,43 @@ export default class Pie {
         (<HTMLElement>e.currentTarget).style.opacity = "1";
         this.drawCenterText();
       });
+    });
+  }
+  initStyleOffsetMonth(){
+    const container = <HTMLElement>document.querySelector(`#${this.containerName}`);
+    const svg = container.querySelector("svg");
+    const resetCircle = svg.querySelector("circle");
+    const seasonElems = svg.querySelectorAll(`.${this.containerName}-season`);
+    const monthElems = svg.querySelectorAll(`.${this.containerName}-month`);
+    const types = svg.querySelectorAll(`.${this.containerName}-type`);
+
+    [].slice.call(seasonElems).forEach((seasonElem: HTMLElement, index) => {
+      seasonElem.style.opacity = "0.3";
+      if ([3, 4, 5].indexOf(this.offsetMonth) >= 0 && index === 0) {
+        selectedData[`season`] = "SPRING";
+        seasonElem.style.opacity = "1";
+      }
+      if ([6, 7, 8].indexOf(this.offsetMonth) >= 0 && index === 1) {
+        selectedData[`season`] = "SUMMER";
+        seasonElem.style.opacity = "1";
+      }
+      if ([9, 10, 11].indexOf(this.offsetMonth) >= 0 && index === 2) {
+        selectedData[`season`] = "FALL";
+        seasonElem.style.opacity = "1";
+      }
+      if ([12, 1, 2].indexOf(this.offsetMonth) >= 0 && index === 3) {
+        selectedData[`season`] = "WINTER";
+        seasonElem.style.opacity = "1";
+      }
+    });
+
+    [].slice.call(monthElems).forEach(monthElem => {
+      const month = Number(monthElem.id.split('-')[monthElem.id.split('-').length-1])
+      if(month===this.offsetMonth){
+        monthElem.style.opacity='1'
+      }else{
+        monthElem.style.opacity = '0.3'
+      }
     });
   }
 }

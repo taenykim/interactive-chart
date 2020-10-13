@@ -3,6 +3,7 @@ export default class Pie {
     chartProps: ChartProps;
     chartTitle: string;
     containerName: string;
+    offsetMonth: number;
     originalData: any[];
     dataContents: any[];
     data: any[];
@@ -14,4 +15,5 @@ export default class Pie {
     drawChart(): void;
     drawCenterText(): void;
     addEventListener(): void;
+    initStyleOffsetMonth(): void;
 }

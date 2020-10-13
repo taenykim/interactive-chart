@@ -2,6 +2,7 @@ export interface ChartProps {
   selector: string;
   chartTitle: string;
   data: any[];
+  offsetMonth:number;
 }
 
 export interface Elements {
