@@ -21,8 +21,8 @@ const PieComp = styled.div`
 
 const App = () => {
   useEffect(() => {
-    new Line({ selector: "line-chart", chartTitle: "Accountbook Pie Chart", data });
-    new Pie({ selector: "pie-chart", chartTitle: "Accountbook Pie Chart", data });
+    new Line({ selector: "line-chart", chartTitle: "Accountbook Line Chart", data });
+    new Pie({ selector: "pie-chart", chartTitle: "Pie Chart", data });
   }, []);
   return (
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

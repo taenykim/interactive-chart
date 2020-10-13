@@ -1,6 +1,7 @@
 import { ChartProps } from "./types";
 export default class Pie {
     chartProps: ChartProps;
+    chartTitle: string;
     containerName: string;
     originalData: any[];
     dataContents: any[];
