@@ -1,2 +1,3 @@
-import Chart from "./Chart";
-export { Chart };
+import Line from "./Line";
+import Pie from "./Pie";
+export { Line, Pie };
