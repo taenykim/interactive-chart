@@ -1,10 +1,19 @@
 import React, { useEffect } from "react";
-import { Chart } from "interactive-chart";
+import { Line, Pie } from "interactive-chart";
 import data from "./data.json";
 import styled from "styled-components";
 
-const ChartComp = styled.div`
-  width: 900px;
+const LineComp = styled.div`
+  width: 600px;
+  border: 2px solid black;
+  background-color: #fff;
+  padding: 12px;
+  margin: 10px;
+`;
+
+const PieComp = styled.div`
+  width: 600px;
+  height: 600px;
   border: 2px solid black;
   background-color: #fff;
   padding: 12px;
@@ -12,9 +21,15 @@ const ChartComp = styled.div`
 
 const App = () => {
   useEffect(() => {
-    new Chart({ selector: "line-chart", chartTitle: "Accountbook Line Chart", data });
+    new Line({ selector: "line-chart", chartTitle: "Accountbook Pie Chart", data });
+    new Pie({ selector: "pie-chart", chartTitle: "Accountbook Pie Chart", data });
   }, []);
-  return <ChartComp id="line-chart"></ChartComp>;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <LineComp id="line-chart"></LineComp>
+      <div style={{ width: "600px", border: `2px solid black`, margin: "10px", padding: `12px` }} id="pie-chart"></div>
+    </div>
+  );
 };
 
 export default App;
