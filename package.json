@@ -1,6 +1,6 @@
 {
   "name": "interactive-chart",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "push data and make interactive chart",
   "main": "dist/index.min.js",
   "module": "dist/index.umd.js",
