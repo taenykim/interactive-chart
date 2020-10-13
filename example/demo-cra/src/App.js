@@ -22,7 +22,7 @@ const PieComp = styled.div`
 const App = () => {
   useEffect(() => {
     new Line({ selector: "line-chart", chartTitle: "Accountbook Line Chart", data });
-    new Pie({ selector: "pie-chart", chartTitle: "Pie Chart", data, offsetMonth:12});
+    new Pie({ selector: "pie-chart", chartTitle: "Pie Chart", data, offsetMonth: 11 });
   }, []);
   return (
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

@@ -19,7 +19,7 @@ export default class Pie {
 
   chartTitle: string;
   containerName: string;
-  offsetMonth :number;
+  offsetMonth: number;
 
   originalData: any[];
   dataContents: any[];
@@ -30,17 +30,17 @@ export default class Pie {
     this.initProps(this.chartProps);
     this.insertHTML();
     this.initStyle();
-    this.offsetMonth &&this.changeData(this.offsetMonth)
-    this.offsetMonth && this.initStyleOffsetMonth()
+    this.offsetMonth && this.changeData(this.offsetMonth);
+    this.offsetMonth && this.initStyleOffsetMonth();
     this.drawChart();
     this.addEventListener();
   }
   initProps(chartProps: ChartProps) {
     this.containerName = chartProps.selector;
-    this.chartTitle = chartProps.chartTitle
-    this.offsetMonth = chartProps.offsetMonth
+    this.chartTitle = chartProps.chartTitle;
+    this.offsetMonth = chartProps.offsetMonth;
     console.log(this.offsetMonth);
-    
+
     incomeData = {};
     outlayData = {};
 
@@ -294,8 +294,10 @@ export default class Pie {
         (<HTMLElement>e.currentTarget).style.opacity = "1";
         (<HTMLElement>types[0]).style.opacity = "1";
         (<HTMLElement>types[1]).style.opacity = "0.3";
-        
-        selectedData[`dataType`] = (<HTMLElement>e.currentTarget).id.split(`-`)[(<HTMLElement>e.currentTarget).id.split(`-`).length-1];
+
+        selectedData[`dataType`] = (<HTMLElement>e.currentTarget).id.split(`-`)[
+          (<HTMLElement>e.currentTarget).id.split(`-`).length - 1
+        ];
         selectedData[`type`] = "income";
         this.drawCenterText();
       });
@@ -342,7 +344,9 @@ export default class Pie {
         (<HTMLElement>e.currentTarget).style.opacity = "1";
         (<HTMLElement>types[0]).style.opacity = "0.3";
         (<HTMLElement>types[1]).style.opacity = "1";
-        selectedData[`dataType`] = (<HTMLElement>e.currentTarget).id.split(`-`)[(<HTMLElement>e.currentTarget).id.split(`-`).length-1];
+        selectedData[`dataType`] = (<HTMLElement>e.currentTarget).id.split(`-`)[
+          (<HTMLElement>e.currentTarget).id.split(`-`).length - 1
+        ];
         selectedData[`type`] = "outlay";
         this.drawCenterText();
       });
@@ -391,18 +395,16 @@ export default class Pie {
     const outlaySum: number = outlayDatas.reduce((acc: number, cur: number) => acc + cur, 0);
 
     [].slice.call(incomes).forEach((item: HTMLElement, index) => {
-
-      if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length-1]) {
+      if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
         ratio = incomeDatas[index] / incomeSum;
       }
     });
 
     [].slice.call(outlays).forEach((item: HTMLElement, index) => {
-
-      if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length-1]) {
+      if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
         ratio = outlayDatas[index] / outlaySum;
       }
-    });    
+    });
 
     insertText += selectedData[`dataType`]
       ? `<div style='font-size:32px; font-weight:bold'>${Math.round(ratio * 100)}%</div>`
@@ -458,7 +460,9 @@ export default class Pie {
         [].slice.call(seasonElems).forEach((seasonElem: HTMLElement) => {
           seasonElem.style.opacity = "0.3";
         });
-        const season = (<HTMLElement>e.currentTarget).id.split("-")[(<HTMLElement>e.currentTarget).id.split("-").length-1];
+        const season = (<HTMLElement>e.currentTarget).id.split("-")[
+          (<HTMLElement>e.currentTarget).id.split("-").length - 1
+        ];
         selectedData[`season`] = season;
         (<HTMLElement>e.currentTarget).style.opacity = "1";
         this.drawCenterText();
@@ -467,7 +471,9 @@ export default class Pie {
 
     [].slice.call(monthElems).forEach((monthElem: HTMLElement) => {
       monthElem.addEventListener("mouseenter", (e) => {
-        const month = Number((<HTMLElement>e.currentTarget).id.split("-")[(<HTMLElement>e.currentTarget).id.split("-").length-1]);
+        const month = Number(
+          (<HTMLElement>e.currentTarget).id.split("-")[(<HTMLElement>e.currentTarget).id.split("-").length - 1],
+        );
         this.changeData(month);
         this.drawChart();
 
@@ -515,14 +521,16 @@ export default class Pie {
           [].slice.call(incomes).forEach((item: HTMLElement) => {
             item.style.opacity = "0.3";
           });
-        const type = (<HTMLElement>e.currentTarget).id.split("-")[ (<HTMLElement>e.currentTarget).id.split("-").length-1];
+        const type = (<HTMLElement>e.currentTarget).id.split("-")[
+          (<HTMLElement>e.currentTarget).id.split("-").length - 1
+        ];
         selectedData[`type`] = type;
         (<HTMLElement>e.currentTarget).style.opacity = "1";
         this.drawCenterText();
       });
     });
   }
-  initStyleOffsetMonth(){
+  initStyleOffsetMonth() {
     const container = <HTMLElement>document.querySelector(`#${this.containerName}`);
     const svg = container.querySelector("svg");
     const resetCircle = svg.querySelector("circle");
@@ -550,12 +558,12 @@ export default class Pie {
       }
     });
 
-    [].slice.call(monthElems).forEach(monthElem => {
-      const month = Number(monthElem.id.split('-')[monthElem.id.split('-').length-1])
-      if(month===this.offsetMonth){
-        monthElem.style.opacity='1'
-      }else{
-        monthElem.style.opacity = '0.3'
+    [].slice.call(monthElems).forEach((monthElem) => {
+      const month = Number(monthElem.id.split("-")[monthElem.id.split("-").length - 1]);
+      if (month === this.offsetMonth) {
+        monthElem.style.opacity = "1";
+      } else {
+        monthElem.style.opacity = "0.3";
       }
     });
   }

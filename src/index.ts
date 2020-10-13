@@ -7,7 +7,7 @@ const chartProps: ChartProps = {
   selector: "root",
   chartTitle: "Accountbook line Chart",
   data: dummy,
-  offsetMonth:3
+  offsetMonth: 3,
 };
 
 // new Chart(chartProps);

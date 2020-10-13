@@ -244,7 +244,10 @@ export default class Line {
     this.tempMoveX = 0;
 
     const { width: trueChartWidth, height: trueChartHeight } = this.elements.chart.getBoundingClientRect();
-    this.trueChartCanvasSize = { width: trueChartWidth, height: trueChartHeight };
+    this.trueChartCanvasSize = {
+      width: trueChartWidth,
+      height: trueChartHeight,
+    };
   }
   drawChart(moveX: number) {
     const canvas = this.elements.chart;
@@ -427,7 +430,10 @@ export default class Line {
     canvas.width = MINIMAP_RESOLUTION_WIDTH;
     const { width: trueMinimapWidth, height: trueMinimapHeight } = this.elements.minimap.getBoundingClientRect();
     canvas.height = (CHART_RESOLUTION_WIDTH * trueMinimapHeight) / trueMinimapWidth;
-    this.trueMinimapCanvasSize = { width: trueMinimapWidth, height: trueMinimapHeight };
+    this.trueMinimapCanvasSize = {
+      width: trueMinimapWidth,
+      height: trueMinimapHeight,
+    };
   }
   drawMinimap(moveX: number) {
     const canvas = this.elements.minimap;
