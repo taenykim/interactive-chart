@@ -5,6 +5,10 @@
 
 📈 📉 push datas and make interactive chart 📊
 
+## Demo
+
+https://interactive-chart.vercel.app/
+
 ## Line Chart
 
 > make chart with Canvas
@@ -16,10 +20,6 @@
 > make chart with SVG
 
 ![](./images/screenshot2.png)
-
-## Demo
-
-https://interactive-chart.vercel.app/
 
 ## How to use
 
