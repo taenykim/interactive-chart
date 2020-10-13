@@ -420,7 +420,7 @@ export default class Pie {
 
     [].slice.call(outlays).forEach((item: HTMLElement) => {
       const category = item.id.split("-")[item.id.split("-").length - 1];
-      const value = incomeData[category] ? incomeData[category] : 0;
+      const value = outlayData[category] ? outlayData[category] : 0;
       if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
         ratio = value / outlaySum;
       }
