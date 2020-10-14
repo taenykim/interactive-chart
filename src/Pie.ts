@@ -414,7 +414,7 @@ export default class Pie {
       const category = item.id.split("-")[item.id.split("-").length - 1];
       const value = incomeData[category] ? incomeData[category] : 0;
       if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
-        ratio = value / incomeSum;
+        ratio = isNaN(value / incomeSum) ? 0 : value / incomeSum;
       }
     });
 
@@ -422,7 +422,7 @@ export default class Pie {
       const category = item.id.split("-")[item.id.split("-").length - 1];
       const value = outlayData[category] ? outlayData[category] : 0;
       if (selectedData[`dataType`] === item.id.split(`-`)[item.id.split(`-`).length - 1]) {
-        ratio = value / outlaySum;
+        ratio = isNaN(value / outlaySum) ? 0 : value / outlaySum;
       }
     });
 

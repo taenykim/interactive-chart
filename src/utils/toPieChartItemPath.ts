@@ -9,8 +9,8 @@ export const toPieChartItemPath = (
   const _toXY = (cX: number, cY: number, r: number, degrees: number) => {
     const rad = (degrees * Math.PI) / 180.0;
     return {
-      x: cX + r * Math.cos(rad),
-      y: cY + r * Math.sin(rad),
+      x: isNaN(cX + r * Math.cos(rad)) ? 0 : cX + r * Math.cos(rad),
+      y: isNaN(cY + r * Math.sin(rad)) ? 0 : cY + r * Math.sin(rad),
     };
   };
   const startIn = _toXY(x, y, radiusIn, endAngle);
