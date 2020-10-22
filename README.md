@@ -9,21 +9,16 @@
 
 https://interactive-chart.vercel.app/
 
-## Line Chart
+## Chart Preview
 
-> make chart with Canvas
+|Line Chart `canvas`|Pie Chart `svg`|
+|--|--|
+|![](./images/screenshot.png)|![](./images/screenshot2.png)|
 
-![](./images/screenshot.png)
-
-## Pie Chart
-
-> make chart with SVG
-
-![](./images/screenshot2.png)
 
 ## How to use
 
-```
+```bash
 npm i interactive-chart
 ```
 
@@ -40,6 +35,7 @@ new Pie({
   selector: "root", // DOM element id,
   chartTitle: "Accountbook Line Chart", // chart title
   data, // chart data
+  offsetMonth: 11 // current focusing month
 });
 ```
 
