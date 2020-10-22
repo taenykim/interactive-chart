@@ -9,11 +9,12 @@
 
 https://interactive-chart.vercel.app/
 
-## Chart Preview
+## Charts
 
 |Line Chart `canvas`|Pie Chart `svg`|
 |--|--|
 |![](./images/screenshot.png)|![](./images/screenshot2.png)|
+|drag / move / resize / minimap|hover & highlighting / information in circle|
 
 
 ## How to use
