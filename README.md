@@ -14,7 +14,7 @@ https://interactive-chart.vercel.app/
 |Line Chart `canvas`|Pie Chart `svg`|
 |--|--|
 |![](./images/screenshot.png)|![](./images/screenshot2.png)|
-|drag / move / resize / minimap|hover & highlighting / information in circle|
+| drag / move / resize / minimap / tooltip | hovering / highlighting / information circle|
 
 
 ## How to use
